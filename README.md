@@ -92,20 +92,6 @@ The dataset includes audio samples from various sources:
 - [Audio Classification - DualNet Xpert (99% accuracy)](https://www.kaggle.com/code/lokeshbhaskarnr/audio-classification-dualnet-xpert-99)
 - [Audio Dataset Visualization](https://www.kaggle.com/code/lokeshbhaskarnr/audio-dataset-visualization)
 
-
-Here’s your **README.md** in proper Markdown format:  
-
-```markdown
-# Generic Audio Classifier (GAC)
-
-A **Streamlit-based** application for classifying and analyzing audio files. This app allows users to upload audio files, classify them, and add them to a dataset for further training.
-
-## 🚀 Features
-- Audio classification with deep learning models.
-- Visual representation of waveforms and spectrograms.
-- Upload and categorize audio files.
-- Add new audio samples to a dataset.
-
 ---
 
 ## 🛠️ Setup Instructions
@@ -172,7 +158,7 @@ streamlit run app_local_record.py
 
 ## 📜 License
 
-This project is **open-source** and available under the MIT License.
+This project is **open-source** and available under the [Apache](https://github.com/LokeshBhaskarNR/Generic-Audio-Classifier/blob/main/LICENSE) License.
 ```
 
 You can **save this as `README.md`** in your project directory. 🚀
