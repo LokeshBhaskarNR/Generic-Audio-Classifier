@@ -512,7 +512,7 @@ if app_mode == "Classify Audio":
     st.warning("The Streamlit version does not support audio recording. Please use the local device for audio recording. The recording feature is available in the file: [app_local_record.py](https://github.com/your-repo/audio_record.py)")
 
     if input_method == "Upload Audio File":
-        uploaded_file = st.file_uploader("Upload an audio file", type=["wav", "mp3", "ogg", "flac"])
+        uploaded_file = st.file_uploader("Upload an audio file", type=["wav", "mp3"])
         if uploaded_file is not None:
 
             with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as tmp_file:
@@ -836,30 +836,33 @@ elif app_mode == "Add Training Data":
                 if data_input_method == "Upload Audio File":
                     data_file = st.file_uploader(
                         "Upload an audio file", 
-                        type=["wav", "mp3", "ogg", "flac"], 
+                        type=["wav", "mp3"],
                         key="audio_upload"
                     )
                     
                     if data_file:
-                        
                         file_extension = os.path.splitext(data_file.name)[1].lower()
+                        
                         with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as tmp_file:
                             tmp_file.write(data_file.getvalue())
                             temp_input_path = tmp_file.name
-                        
-                        temp_flac_path = os.path.splitext(temp_input_path)[0] + ".flac"
-                        audio = AudioSegment.from_file(temp_input_path)
-                        audio.export(temp_flac_path, format="flac")
-                        
-                        st.session_state.audio_path = temp_flac_path
-                        
-                        st.audio(temp_flac_path, format='audio/flac')                    
+
+                        if file_extension == ".wav":
+                            temp_wav_path = temp_input_path
+                        else:
+                            temp_wav_path = os.path.splitext(temp_input_path)[0] + ".wav"
+                            audio = AudioSegment.from_mp3(temp_input_path) 
+                            audio.export(temp_wav_path, format="wav")
+
+                        st.session_state.audio_path = temp_wav_path
+
+                        st.audio(temp_wav_path, format='audio/wav')                  
 
             if st.button("ADD TO DATASET", key="final_submit", type="primary"):
                 if "audio_path" in st.session_state and st.session_state.audio_path:
-
-                    if not st.session_state.audio_path.lower().endswith('.flac'):
-                        st.error("Only FLAC format is supported. Please try again.")
+                    
+                    if not st.session_state.audio_path.lower().endswith('.wav'):
+                        st.error("Only WAV format is supported. Please upload a WAV file.")
                     else:
                         with st.spinner("Processing audio..."):
                             success, result = add_data_to_dataset(
@@ -875,7 +878,7 @@ elif app_mode == "Add Training Data":
                             else:
                                 st.error(f"Failed to add audio: {result}")
                 else:
-                    st.error("Please provide audio data first")
+                    st.error("Please provide a WAV audio file first.")
 
 elif app_mode == "Model Information":
     st.header("Model Information")
