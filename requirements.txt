@@ -1,0 +1,12 @@
+streamlit
+numpy
+pandas
+librosa
+matplotlib
+sounddevice
+soundfile
+tensorflow
+plotly
+Pillow
+pydub
+streamlit_option_menu
