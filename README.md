@@ -92,6 +92,109 @@ The dataset includes audio samples from various sources:
 - [Audio Classification - DualNet Xpert (99% accuracy)](https://www.kaggle.com/code/lokeshbhaskarnr/audio-classification-dualnet-xpert-99)
 - [Audio Dataset Visualization](https://www.kaggle.com/code/lokeshbhaskarnr/audio-dataset-visualization)
 
+
+Here’s your **README.md** in proper Markdown format:  
+
+```markdown
+# Generic Audio Classifier (GAC)
+
+A **Streamlit-based** application for classifying and analyzing audio files. This app allows users to upload audio files, classify them, and add them to a dataset for further training.
+
+## 🚀 Features
+- Audio classification with deep learning models.
+- Visual representation of waveforms and spectrograms.
+- Upload and categorize audio files.
+- Add new audio samples to a dataset.
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1️⃣ Install Required Dependencies
+
+Ensure you have Python **3.8 or later** installed.
+
+Run the following command to install all required Python libraries:
+
+```sh
+pip install -r requirements.txt
+```
+
+### 2️⃣ Install FFmpeg (Required for `pydub` and `librosa`)
+
+#### **Windows:**
+1. Download FFmpeg from: [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
+2. Extract it to a directory (e.g., `C:\ffmpeg`).
+3. Add the `bin` folder to your system `PATH`:
+   - Search for **"Edit the system environment variables"** in Windows.
+   - Under **System Properties > Advanced > Environment Variables**, find `Path` and edit it.
+   - Click **New** and add:  
+     ```
+     C:\ffmpeg\bin
+     ```
+   - Click **OK** and restart your system.
+
+#### **Mac/Linux (Using Homebrew):**
+```sh
+brew install ffmpeg
+```
+
+#### **Ubuntu/Debian (Using APT):**
+```sh
+sudo apt update && sudo apt install ffmpeg -y
+```
+
+---
+
+## ⚠️ Streamlit Limitations
+
+- **Streamlit does not support FFmpeg and sounddevice** in the cloud environment.
+- To enable **audio recording**, run the app **locally**.
+- Use `app_local_record.py` instead of `app.py` for full recording features.
+
+---
+
+## 🔧 Running the App Locally
+
+To start the app, run:
+
+```sh
+streamlit run app.py
+```
+
+If you want **local audio recording support**, run:
+
+```sh
+streamlit run app_local_record.py
+```
+
+---
+
+## 📜 License
+
+This project is **open-source** and available under the MIT License.
+```
+
+You can **save this as `README.md`** in your project directory. 🚀
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Acknowledgements
 
 Special thanks to the content creators who made their recordings available. The Vehicle sounds dataset was sourced from Kaggle user Jan Boubia Abderrahim.
