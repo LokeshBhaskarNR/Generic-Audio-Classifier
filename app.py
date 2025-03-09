@@ -1205,4 +1205,4 @@ animated_html = f"""
     </div>
 """
 
-st.sidebar.markdown(animated_html, unsafe_allow_html=True)
+st.markdown(animated_html, unsafe_allow_html=True)
