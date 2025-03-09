@@ -1201,8 +1201,8 @@ animated_html = f"""
 
     <div class="github-container">
         <p>⬇️⬇️ Check out the github Repository ⬇️⬇️</p>
-        <p> <a href="{repo_url}" target="_blank">{repo_url}</a></p>
-        <p> <a href="{username_url}" target="_blank">{username_url}</a></p>
+        <p> <a href="{repo_url}" target="_blank">Repository : {repo_url}</a></p>
+        <p> <a href="{username_url}" target="_blank">Lokesh Bhaskar : {username_url}</a></p>
     </div>
 """
 
