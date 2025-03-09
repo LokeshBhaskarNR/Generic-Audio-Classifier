@@ -341,7 +341,7 @@ if 'features' not in st.session_state:
 if 'prediction_results' not in st.session_state:
     st.session_state.prediction_results = None
 
-st.title("🔊 Generic Audio Classifier")
+st.title("🔊 GAC -  Generic Audio Classifier")
 
 st.markdown("""
         <style>
