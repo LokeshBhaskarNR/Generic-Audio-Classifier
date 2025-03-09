@@ -209,24 +209,20 @@ def add_data_to_dataset(audio_file, category, subcategory, save_path):
         category_dir = os.path.join(save_path, category)
         subcategory_dir = os.path.join(category_dir, subcategory)
         
-        if not os.path.exists(category_dir):
-            os.makedirs(category_dir)
-        
-        if not os.path.exists(subcategory_dir):
-            os.makedirs(subcategory_dir)
-        
+        os.makedirs(subcategory_dir, exist_ok=True)
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"sample_{timestamp}.flac"  
+        filename = f"sample_{timestamp}.wav"  
         destination = os.path.join(subcategory_dir, filename)
-        
-        if not audio_file.lower().endswith('.flac'):
-            from pydub import AudioSegment
-            audio = AudioSegment.from_file(audio_file)
-            audio.export(destination, format="flac")
-        else:
-            shutil.copy(audio_file, destination)
-        
-        return True, destination
+
+        try:
+            data, samplerate = sf.read(audio_file) 
+            sf.write(destination, data, samplerate)  
+        except Exception as e:
+            return False, f"Invalid WAV file: {e}"
+
+        return True, destination  
+
     except Exception as e:
         return False, str(e)
 
