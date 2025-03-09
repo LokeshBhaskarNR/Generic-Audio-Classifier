@@ -159,27 +159,6 @@ streamlit run app_local_record.py
 ## 📜 License
 
 This project is **open-source** and available under the [Apache](https://github.com/LokeshBhaskarNR/Generic-Audio-Classifier/blob/main/LICENSE) License.
-```
-
-You can **save this as `README.md`** in your project directory. 🚀
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Acknowledgements
 
