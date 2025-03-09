@@ -505,7 +505,7 @@ if app_mode == "Classify Audio":
     
     st.subheader("1️⃣ Audio Input")
     input_method = st.radio("Choose input method:", ["Upload Audio File"])
-    st.warning("The Streamlit version does not support audio recording. Please use the local device for audio recording. The recording feature is available in the file: [app_local_record.py](https://github.com/your-repo/audio_record.py)")
+    st.warning("The Streamlit version does not support audio recording. Please use the local device for audio recording. The recording feature is available in the file: [app_local_record.py](https://github.com/LokeshBhaskarNR/Generic-Audio-Classifier/blob/main/app_local_record.py)")
 
     if input_method == "Upload Audio File":
         uploaded_file = st.file_uploader("Upload an audio file", type=["wav", "mp3"])
@@ -1163,3 +1163,46 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+repo_url = "https://github.com/LokeshBhaskarNR/Generic-Audio-Classifier"
+username_url = "https://github.com/LokeshBhaskarNR"
+
+animated_html = f"""
+    <style>
+        @keyframes fadeIn {{
+            0% {{ opacity: 0; transform: translateY(-10px); }}
+            100% {{ opacity: 1; transform: translateY(0); }}
+        }}
+
+        .github-container {{
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #262730;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+        }}
+
+        .github-container a {{
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin: 5px 0;
+            transition: color 0.3s ease-in-out;
+        }}
+
+        .github-container a:hover {{
+            color: #1E90FF;
+        }}
+    </style>
+
+    <div class="github-container">
+        <p>🔗 <a href="{repo_url}" target="_blank">GitHub Repository</a></p>
+        <p>👤 <a href="{username_url}" target="_blank">LokeshBhaskarNR Profile</a></p>
+    </div>
+"""
+
+st.sidebar.markdown(animated_html, unsafe_allow_html=True)
