@@ -5,7 +5,7 @@ import pandas as pd
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
-# import sounddevice as sd
+import sounddevice as sd
 import soundfile as sf
 import tempfile
 import time
@@ -41,7 +41,7 @@ st.set_page_config(
 )
 
 SAMPLE_RATE = 22050
-DURATION = 5  
+DURATION = 5  # seconds
 RECORDING_PATH = "recorded_audio.wav"
 DATASET_PATH = "DATASET_FLAC"
 MODEL_PATHS = {
@@ -55,7 +55,7 @@ def get_parameters():
     return {
         'data_dir': 'DATASET',
         'sample_rate': 22050,
-        'duration': 5,  
+        'duration': 5,  # seconds
         'n_mfcc': 40,
         'n_mels': 128,
         'n_fft': 2048,
@@ -64,7 +64,7 @@ def get_parameters():
         'epochs': 20,
         'validation_split': 0.2,
         'random_state': 42,
-        'num_test_samples': 10  
+        'num_test_samples': 10  # Number of random samples to test
     }
 
 def extract_features(file_path, params):
@@ -206,6 +206,7 @@ def record_audio(duration=5, fs=22050):
 
 def add_data_to_dataset(audio_file, category, subcategory, save_path):
     try:
+        # Create directories if they don't exist
         category_dir = os.path.join(save_path, category)
         subcategory_dir = os.path.join(category_dir, subcategory)
         
@@ -215,15 +216,19 @@ def add_data_to_dataset(audio_file, category, subcategory, save_path):
         if not os.path.exists(subcategory_dir):
             os.makedirs(subcategory_dir)
         
+        # Generate timestamp and create filename with .flac extension
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"sample_{timestamp}.flac"  
+        filename = f"sample_{timestamp}.flac"  # Changed extension to .flac
         destination = os.path.join(subcategory_dir, filename)
         
+        # If the source file is not FLAC, convert it
         if not audio_file.lower().endswith('.flac'):
+            # Convert to FLAC using AudioSegment
             from pydub import AudioSegment
             audio = AudioSegment.from_file(audio_file)
             audio.export(destination, format="flac")
         else:
+            # Simply copy the file if it's already FLAC
             shutil.copy(audio_file, destination)
         
         return True, destination
@@ -271,14 +276,14 @@ def plot_probability_distribution(probabilities, title):
     return fig
 
 def get_model_info(model, metadata):
-
+    # Get model summary as string
     summary_str = []
     model.summary(print_fn=lambda x: summary_str.append(x))
     
     model_layers = []
     for layer in model.layers:
         try:
-            output_shape = str(layer.output.shape)  
+            output_shape = str(layer.output.shape)  # For newer TensorFlow versions
         except AttributeError:
             output_shape = "N/A"
             
@@ -482,6 +487,7 @@ if app_mode == "Home":
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
+    # Key features
     st.markdown('<h2 class="sub-header">Key Features</h2>', unsafe_allow_html=True)
     
     feature_cols = st.columns(4)
@@ -501,6 +507,7 @@ if app_mode == "Home":
             st.markdown(f"{feature['desc']}")
             st.markdown('</div>', unsafe_allow_html=True)
     
+    # Call to action
     st.markdown('<div class="card" style="background-color: #e3f2fd; text-align: center; padding: 2px;">', unsafe_allow_html=True)
     st.markdown("### Ready to classify your audio... ?")
     
@@ -508,11 +515,11 @@ if app_mode == "Classify Audio":
     st.header("Audio Classification")
     
     st.subheader("1️⃣ Audio Input")
-    input_method = st.radio("Choose input method:", ["Upload Audio File"])
-    st.warning("The Streamlit version does not support audio recording. Please use the local device for audio recording. The recording feature is available in the file: [app_local_record.py](https://github.com/your-repo/audio_record.py)")
-
+    input_method = st.radio("Choose input method:", ["Upload Audio File", "Record Audio"])
+    
     if input_method == "Upload Audio File":
         uploaded_file = st.file_uploader("Upload an audio file", type=["wav", "mp3", "ogg", "flac"])
+        
         if uploaded_file is not None:
 
             with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as tmp_file:
@@ -520,7 +527,12 @@ if app_mode == "Classify Audio":
                 st.session_state.audio_file = tmp_file.name
             
             st.audio(uploaded_file, format='audio/wav')
-            st.success("✅ Audio file uploaded!")       
+            st.success("✅ Audio file uploaded!")
+    
+    else:
+        if st.button("Start Recording (5 seconds)"):
+            st.session_state.audio_file = record_audio(duration=5, fs=SAMPLE_RATE)
+            st.audio(st.session_state.audio_file, format='audio/wav')
     
     if st.session_state.audio_file is not None and st.button("Extract Features"):
         with st.spinner("Extracting audio features..."):
@@ -717,8 +729,7 @@ elif app_mode == "Add Training Data":
         st.session_state.audio_path = None
     
     st.header("Add New Training Data")
-    st.warning("The Streamlit version does not support audio recording. Please use the local device for audio recording. The recording feature is available in the file: [app_local_record.py](https://github.com/your-repo/audio_record.py)")
-
+    
     existing_categories, existing_subcategories = get_categories_and_subcategories()
     print(existing_categories, existing_subcategories)
     
@@ -735,9 +746,11 @@ elif app_mode == "Add Training Data":
     if 'audio_path' not in st.session_state:
         st.session_state.audio_path = None
     
+    # Tab 1: Category Selection
     with tab1:
         st.subheader("Step 1: Select or Create Category")
         
+        # Use columns for better layout
         col1, col2 = st.columns(2)
         
         with col1:
@@ -774,12 +787,14 @@ elif app_mode == "Add Training Data":
             else:
                 st.error("Please specify a category name")
     
+    # Tab 2: Subcategory Selection - Enable only after category selection
     with tab2:
         if not st.session_state.category_selection_complete:
             st.info("Please complete category selection first")
         else:
             st.subheader(f"Step 2: Select or Create Subcategory for '{st.session_state.selected_category}'")
             
+            # Use columns for better layout
             col1, col2 = st.columns(2)
             
             with col1:
@@ -817,18 +832,20 @@ elif app_mode == "Add Training Data":
                 else:
                     st.error("Please specify a subcategory name")
     
+    # Tab 3: Audio Input - Enable only after subcategory selection
     with tab3:
         if not st.session_state.category_selection_complete or not st.session_state.subcategory_selection_complete:
             st.info("Please complete category and subcategory selection first")
         else:
             st.subheader(f"Step 3: Add Audio to {st.session_state.selected_category}/{st.session_state.selected_subcategory}")
             
+            # Audio input selection with better layout
             col1, col2 = st.columns([1, 2])
             
             with col1:
                 data_input_method = st.radio(
                     "Choose input method:", 
-                    ["Upload Audio File"], 
+                    ["Upload Audio File", "Record Audio"], 
                     key="data_input_method"
                 )
             
@@ -842,22 +859,50 @@ elif app_mode == "Add Training Data":
                     
                     if data_file:
                         
+                        # Save to temporary file with original extension
                         file_extension = os.path.splitext(data_file.name)[1].lower()
                         with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as tmp_file:
                             tmp_file.write(data_file.getvalue())
                             temp_input_path = tmp_file.name
                         
+                        # Convert to FLAC regardless of input format
                         temp_flac_path = os.path.splitext(temp_input_path)[0] + ".flac"
                         audio = AudioSegment.from_file(temp_input_path)
                         audio.export(temp_flac_path, format="flac")
                         
+                        # Store FLAC path in session state
                         st.session_state.audio_path = temp_flac_path
                         
-                        st.audio(temp_flac_path, format='audio/flac')                    
+                        # Display the converted FLAC file
+                        st.audio(temp_flac_path, format='audio/flac')
+                                
+                else:  # Record Audio
+                    col_a, col_b = st.columns([1, 1])
+                    with col_a:
+                        if st.button("Start Recording (5s)", key="record_button"):
+                            with st.spinner("Recording in progress..."):
+                                # Record audio (likely as WAV based on your record_audio function)
+                                temp_wav_path = record_audio(duration=5, fs=SAMPLE_RATE)
+                                
+                                # Convert recorded WAV to FLAC
+                                temp_flac_path = os.path.splitext(temp_wav_path)[0] + ".flac"
+                                audio = AudioSegment.from_file(temp_wav_path, format="wav")
+                                audio.export(temp_flac_path, format="flac")
+                                
+                                # Remove the WAV file as we only need FLAC
+                                if os.path.exists(temp_wav_path):
+                                    os.remove(temp_wav_path)
+                                
+                                # Store FLAC path in session state
+                                st.session_state.audio_path = temp_flac_path
+
+                    with col_b:
+                        if "audio_path" in st.session_state and st.session_state.audio_path and data_input_method == "Record Audio":
+                            st.audio(st.session_state.audio_path, format='audio/flac')  # Play converted FLAC
 
             if st.button("ADD TO DATASET", key="final_submit", type="primary"):
                 if "audio_path" in st.session_state and st.session_state.audio_path:
-
+                    # Verify that we're working with a FLAC file
                     if not st.session_state.audio_path.lower().endswith('.flac'):
                         st.error("Only FLAC format is supported. Please try again.")
                     else:
@@ -871,6 +916,7 @@ elif app_mode == "Add Training Data":
                             
                             if success:
                                 st.success(f"✅ Audio added to dataset at: {result}")
+                                # Reset state for next entry
                                 st.button("Add Another Audio Sample", key="reset_form", on_click=reset_form_state)
                             else:
                                 st.error(f"Failed to add audio: {result}")
@@ -961,10 +1007,13 @@ elif app_mode == "Model Information":
                 use_container_width=True
             )
             
+            # Generate a visual representation of the model architecture
             st.markdown("### 🖼️ Visual Architecture")
             
+            # Create a simple visual representation of the architecture
             if st.button("Generate Visual Architecture"):
                 with st.spinner("Generating architecture visualization..."):
+                    # Create a simplified visual representation
                     layer_heights = {
                         'Conv2D': 80,
                         'MaxPooling2D': 60, 
@@ -978,14 +1027,17 @@ elif app_mode == "Model Information":
                         'Bidirectional': 90,
                     }
                     
+                    # Default height for unknown layer types
                     default_height = 50
                     
+                    # Create an image 
                     img_width = 800
                     img_height = 600
                     
                     img = Image.new('RGB', (img_width, img_height), color='white')
                     draw = ImageDraw.Draw(img)
                     
+                    # Try to load a font, use default if not available
                     try:
                         font = ImageFont.truetype("arial.ttf", 14)
                         small_font = ImageFont.truetype("arial.ttf", 10)
@@ -993,6 +1045,7 @@ elif app_mode == "Model Information":
                         font = ImageFont.load_default()
                         small_font = ImageFont.load_default()
                     
+                    # Draw layers
                     max_layers = min(len((st.session_state.current_model).layers), 15)  # Limit to 15 layers for clarity
                     layer_spacing = img_width // (max_layers + 1)
                     
@@ -1000,31 +1053,37 @@ elif app_mode == "Model Information":
                         layer = (st.session_state.current_model).layers[i]
                         layer_type = layer.__class__.__name__
                         
+                        # Get height for this layer type
                         height = layer_heights.get(layer_type, default_height)
                         
+                        # Calculate position
                         x = (i + 1) * layer_spacing
                         y = img_height // 2
                         
+                        # Choose color based on layer type
                         colors = {
-                            'Conv2D': (100, 149, 237),  
-                            'MaxPooling2D': (65, 105, 225),  
-                            'Dense': (50, 205, 50),  
-                            'Dropout': (220, 220, 220),  
-                            'Flatten': (255, 165, 0),  
-                            'BatchNormalization': (186, 85, 211),  
-                            'Input': (255, 99, 71),  
-                            'LSTM': (255, 215, 0), 
-                            'GRU': (218, 165, 32),  
-                            'Bidirectional': (139, 69, 19),  
+                            'Conv2D': (100, 149, 237),  # Cornflower blue
+                            'MaxPooling2D': (65, 105, 225),  # Royal blue
+                            'Dense': (50, 205, 50),  # Lime green
+                            'Dropout': (220, 220, 220),  # Light gray
+                            'Flatten': (255, 165, 0),  # Orange
+                            'BatchNormalization': (186, 85, 211),  # Medium orchid
+                            'Input': (255, 99, 71),  # Tomato
+                            'LSTM': (255, 215, 0),  # Gold
+                            'GRU': (218, 165, 32),  # Goldenrod
+                            'Bidirectional': (139, 69, 19),  # Saddle brown
                         }
                         
                         color = colors.get(layer_type, (200, 200, 200))
                         
+                        # Draw the layer
                         draw.rectangle([x-40, y-height//2, x+40, y+height//2], fill=color, outline=(0, 0, 0))
                         
+                        # Draw layer name and parameter count
                         draw.text((x-35, y-10), f"{layer_type}", fill=(0, 0, 0), font=font)
                         draw.text((x-35, y+10), f"Params: {layer.count_params():,}", fill=(0, 0, 0), font=small_font)
                         
+                        # Draw connections
                         if i > 0:
                             prev_x = (i) * layer_spacing
                             prev_layer_type = (st.session_state.current_model).layers[i-1].__class__.__name__
@@ -1032,16 +1091,20 @@ elif app_mode == "Model Information":
                             
                             draw.line([(prev_x+40, img_height//2), (x-40, img_height//2)], fill=(0, 0, 0), width=2)
                     
+                    # Convert PIL Image to bytes for Streamlit
                     buf = io.BytesIO()
                     img.save(buf, format='PNG')
                     buf.seek(0)
                     
+                    # Display the image
                     st.image(buf, caption='Simplified Model Architecture', use_container_width =True)
                     
+        # Provide download options
         st.markdown("## 📥 Export Options")
         
         col1, col2 = st.columns(2)
         with col1:
+            # Option to download summary as text
             summary_text = f"""
             MODEL ARCHITECTURE SUMMARY
             =========================
@@ -1075,6 +1138,7 @@ elif app_mode == "Model Information":
             )
             
         with col2:
+            # Option to download as CSV
             csv = model_df.to_csv(index=False)
             st.download_button(
                 label="Download as CSV",
@@ -1154,8 +1218,9 @@ elif app_mode == "Model Information":
     else:
         st.error("No model is currently loaded. Please select a model from the sidebar.")
 
-st.markdown("---") 
+st.markdown("---")  # Horizontal line
 
+# Center-aligned footer text using HTML + CSS
 st.markdown(
     """
     <div style="text-align: center; font-size: 16px;">
