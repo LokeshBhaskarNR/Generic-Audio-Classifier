@@ -713,7 +713,9 @@ if app_mode == "Classify Audio":
                                 font-size: 20px; 
                                 font-weight: bold;
                                 color: black">
-                                Predicted Sub Category : <span style="text-transform: uppercase; color: #0D4715;">{prediction_results['subcategory']} {subcategory_with_emojis['subcategory']}</span>
+                                Predicted Sub Category : <span style="text-transform: uppercase; color: #0D4715;">
+                                {prediction_results['subcategory']} {subcategory_with_emojis[prediction_results['subcategory']]}
+                            </span>
                             </div>
                         """, unsafe_allow_html=True)
                 
