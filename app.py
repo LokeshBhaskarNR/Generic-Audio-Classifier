@@ -517,6 +517,12 @@ if app_mode == "Classify Audio":
             
             st.audio(uploaded_file, format='audio/wav')
             st.success("✅ Audio file uploaded!")       
+            
+    def get_plot_bytes(fig):
+        img_bytes = io.BytesIO()
+        fig.savefig(img_bytes, format="png")
+        img_bytes.seek(0)
+        return img_bytes
     
     if st.session_state.audio_file is not None and st.button("Extract Features"):
         with st.spinner("Extracting audio features..."):
@@ -525,18 +531,31 @@ if app_mode == "Classify Audio":
             
             if st.session_state.features is not None:
                 st.success("✅ Features extracted successfully!")
+
+                waveform_fig = visualize_audio_waveform(st.session_state.features['audio'], st.session_state.features['sr'])
+                mfcc_fig = visualize_mfcc(st.session_state.features['mfccs'])
+                mel_spec_fig = visualize_mel_spectrogram(st.session_state.features['mel_spec'])
                 
                 st.subheader("2️⃣ Audio Visualizations")
                 col1, col2 = st.columns(2)
                 
                 with col1:
-                    st.pyplot(visualize_audio_waveform(st.session_state.features['audio'], st.session_state.features['sr']))
-                
+                    st.write("WaveForm Visualization")
+                    st.pyplot(waveform_fig)
+                    waveform_bytes = get_plot_bytes(waveform_fig)
+                    st.download_button("Download Waveform", waveform_bytes, file_name="waveform.png", mime="image/png")
+                    
                 with col2:
                     st.write("MFCC and Mel Spectrogram")
-                    st.pyplot(visualize_mfcc(st.session_state.features['mfccs']))
-                    st.pyplot(visualize_mel_spectrogram(st.session_state.features['mel_spec']))
-                   
+                    
+                    st.pyplot(mfcc_fig)
+                    mfcc_bytes = get_plot_bytes(mfcc_fig)
+                    st.download_button("Download MFCC", mfcc_bytes, file_name="mfcc.png", mime="image/png")
+                
+                    st.pyplot(mel_spec_fig)
+                    mel_spec_bytes = get_plot_bytes(mel_spec_fig)
+                    st.download_button("Download Mel Spectrogram", mel_spec_bytes, file_name="mel_spectrogram.png", mime="image/png")
+                                   
     
     if st.session_state.features is not None and st.session_state.current_model is not None:
         st.subheader("3️⃣ Classification Filters")
