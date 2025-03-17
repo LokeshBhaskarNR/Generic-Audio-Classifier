@@ -21,6 +21,33 @@ import io
 from pydub import AudioSegment
 from streamlit_option_menu import option_menu
 
+subcategory_with_emojis = {
+    'cat': '🐱',
+    'dog': '🐶',
+    'elephant': '🐘',
+    'horse': '🐴',
+    'lion': '🦁',
+    'crow': '🐦‍⬛',
+    'parrot': '🦜',
+    'peacock': '🦚',
+    'sparrow': '🐦',
+    'crowd': '👥',
+    'office': '🏢',
+    'rainfall': '🌧️',
+    'wind': '🌬️',
+    'traffic': '🚦',
+    'military': '🪖',
+    'airplane': '✈️',
+    'bicycle': '🚲',
+    'bike': '🏍️',
+    'bus': '🚌',
+    'car': '🚗',
+    'helicopter': '🚁',
+    'train': '🚆',
+    'truck': '🚚'
+}
+
+
 class LayerScale(tf.keras.layers.Layer):
     def __init__(self, dim, init_values=1e-6, **kwargs):
         super().__init__(**kwargs)
@@ -686,7 +713,7 @@ if app_mode == "Classify Audio":
                                 font-size: 20px; 
                                 font-weight: bold;
                                 color: black">
-                                Predicted Sub Category : <span style="text-transform: uppercase; color: #0D4715;">{prediction_results['subcategory']}</span>
+                                Predicted Sub Category : <span style="text-transform: uppercase; color: #0D4715;">{prediction_results['subcategory']} {subcategory_with_emojis['subcategory']}</span>
                             </div>
                         """, unsafe_allow_html=True)
                 
